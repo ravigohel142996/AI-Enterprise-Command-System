@@ -28,6 +28,7 @@ Successfully migrated the AI Enterprise Operating System from PostgreSQL to SQLi
 - **Updated `requirements.txt`**
   - Removed: PostgreSQL (psycopg), MongoDB (pymongo), Redis (redis), Dash
   - Added: email-validator (required by Pydantic)
+  - Updated: python-multipart 0.0.6 → 0.0.22 (security patches for CVE vulnerabilities)
   - Kept: SQLAlchemy, FastAPI, Streamlit, ML libraries, security packages
   - Result: Reduced from 19 to 15 dependencies
 
