@@ -46,7 +46,7 @@ def get_db():
     """Get SQLite database session"""
     engine = get_engine()
     if engine is None or _SessionLocal is None:
-        logger.error("SQLite database not available")
+        logger.error("Database not initialized")
         raise RuntimeError("Database not initialized")
     
     db = _SessionLocal()

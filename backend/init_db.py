@@ -9,6 +9,7 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from backend.app.db.database import Base, get_engine
 from backend.app.models.models import User, Department
 from backend.app.core.security import get_password_hash
+from backend.app.core.config import settings
 from sqlalchemy.orm import sessionmaker
 
 # Get engine and create tables
@@ -60,8 +61,9 @@ try:
         db.add(dept)
     
     db.commit()
+    db_path = os.path.abspath(settings.DATABASE_PATH)
     print("✅ SQLite database initialized successfully!")
-    print(f"✅ Database location: {os.path.abspath('./data/ai_enterprise.db')}")
+    print(f"✅ Database location: {db_path}")
     print("\nDefault admin credentials:")
     print("Email: admin@ai-enterprise.com")
     print("Password: admin123")

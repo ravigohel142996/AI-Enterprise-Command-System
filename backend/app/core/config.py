@@ -5,6 +5,13 @@ from typing import Optional
 import os
 
 
+def ensure_data_directory(path: str) -> None:
+    """Ensure data directory exists for database"""
+    db_dir = os.path.dirname(path)
+    if db_dir and not os.path.exists(db_dir):
+        os.makedirs(db_dir, exist_ok=True)
+
+
 class Settings(BaseSettings):
     """Application Settings"""
     
@@ -41,10 +48,6 @@ class Settings(BaseSettings):
     @property
     def database_url(self) -> str:
         """Get SQLite connection URL"""
-        # Ensure data directory exists
-        db_dir = os.path.dirname(self.DATABASE_PATH)
-        if db_dir and not os.path.exists(db_dir):
-            os.makedirs(db_dir, exist_ok=True)
         return f"sqlite:///{self.DATABASE_PATH}"
     
     class Config:
@@ -53,3 +56,6 @@ class Settings(BaseSettings):
 
 
 settings = Settings()
+
+# Ensure data directory exists at module load time
+ensure_data_directory(settings.DATABASE_PATH)
