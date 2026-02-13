@@ -1,84 +1,73 @@
 version: '3.8'
 
+# Note: PostgreSQL, MongoDB, and Redis services have been removed.
+# The application now uses SQLite for Streamlit Cloud compatibility.
+# If you want to run with external databases locally, you can uncomment and modify these services.
+
 services:
-  # PostgreSQL Database
-  postgres:
-    image: postgres:15
-    container_name: ai_enterprise_postgres
-    environment:
-      POSTGRES_DB: ai_enterprise_db
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres_password
-    ports:
-      - "5432:5432"
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
-    networks:
-      - ai_enterprise_network
+  # PostgreSQL Database (OPTIONAL - for local development)
+  # postgres:
+  #   image: postgres:15
+  #   container_name: ai_enterprise_postgres
+  #   environment:
+  #     POSTGRES_DB: ai_enterprise_db
+  #     POSTGRES_USER: postgres
+  #     POSTGRES_PASSWORD: postgres_password
+  #   ports:
+  #     - "5432:5432"
+  #   volumes:
+  #     - postgres_data:/var/lib/postgresql/data
+  #   networks:
+  #     - ai_enterprise_network
 
-  # MongoDB
-  mongodb:
-    image: mongo:7
-    container_name: ai_enterprise_mongo
-    environment:
-      MONGO_INITDB_ROOT_USERNAME: mongo
-      MONGO_INITDB_ROOT_PASSWORD: mongo_password
-      MONGO_INITDB_DATABASE: ai_enterprise_mongo
-    ports:
-      - "27017:27017"
-    volumes:
-      - mongo_data:/data/db
-    networks:
-      - ai_enterprise_network
+  # MongoDB (OPTIONAL - for local development)
+  # mongodb:
+  #   image: mongo:7
+  #   container_name: ai_enterprise_mongo
+  #   environment:
+  #     MONGO_INITDB_ROOT_USERNAME: mongo
+  #     MONGO_INITDB_ROOT_PASSWORD: mongo_password
+  #     MONGO_INITDB_DATABASE: ai_enterprise_mongo
+  #   ports:
+  #     - "27017:27017"
+  #   volumes:
+  #     - mongo_data:/data/db
+  #   networks:
+  #     - ai_enterprise_network
 
-  # Redis
-  redis:
-    image: redis:7-alpine
-    container_name: ai_enterprise_redis
-    command: redis-server --requirepass redis_password
-    ports:
-      - "6379:6379"
-    volumes:
-      - redis_data:/data
-    networks:
-      - ai_enterprise_network
+  # Redis (OPTIONAL - for local development)
+  # redis:
+  #   image: redis:7-alpine
+  #   container_name: ai_enterprise_redis
+  #   command: redis-server --requirepass redis_password
+  #   ports:
+  #     - "6379:6379"
+  #   volumes:
+  #     - redis_data:/data
+  #   networks:
+  #     - ai_enterprise_network
 
-  # Backend API
+  # Backend API (Uses SQLite)
   backend:
     build:
-      context: ../..
+      context: .
       dockerfile: deployment/docker/Dockerfile.backend
     container_name: ai_enterprise_backend
     environment:
-      POSTGRES_HOST: postgres
-      POSTGRES_PORT: 5432
-      POSTGRES_DB: ai_enterprise_db
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres_password
-      MONGODB_HOST: mongodb
-      MONGODB_PORT: 27017
-      MONGODB_DB: ai_enterprise_mongo
-      MONGODB_USER: mongo
-      MONGODB_PASSWORD: mongo_password
-      REDIS_HOST: redis
-      REDIS_PORT: 6379
-      REDIS_PASSWORD: redis_password
+      DATABASE_PATH: /app/data/ai_enterprise.db
     ports:
       - "8000:8000"
-    depends_on:
-      - postgres
-      - mongodb
-      - redis
     volumes:
-      - ../../models:/app/models
-      - ../../logs:/app/logs
+      - ./models:/app/models
+      - ./logs:/app/logs
+      - ./data:/app/data
     networks:
       - ai_enterprise_network
 
   # Frontend Dashboard
   frontend:
     build:
-      context: ../..
+      context: .
       dockerfile: deployment/docker/Dockerfile.frontend
     container_name: ai_enterprise_frontend
     environment:
@@ -90,10 +79,11 @@ services:
     networks:
       - ai_enterprise_network
 
-volumes:
-  postgres_data:
-  mongo_data:
-  redis_data:
+# Optional volumes for external databases (commented out)
+# volumes:
+#   postgres_data:
+#   mongo_data:
+#   redis_data:
 
 networks:
   ai_enterprise_network:
