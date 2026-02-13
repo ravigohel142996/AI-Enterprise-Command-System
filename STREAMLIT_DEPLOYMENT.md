@@ -7,6 +7,7 @@ This application has been optimized for fast startup on Streamlit Cloud.
 ### Key Features
 
 ✅ **Fast Startup** - App boots in under 10 seconds
+✅ **SQLite Database** - Embedded database, no external server needed
 ✅ **Lazy-loaded Database Connections** - No blocking at import time
 ✅ **Proper Error Handling** - Graceful degradation if services unavailable
 ✅ **Request Timeouts** - All API calls have 10-second timeout
