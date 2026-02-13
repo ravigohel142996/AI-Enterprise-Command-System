@@ -6,13 +6,14 @@ import os
 # Add parent directory to path
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from backend.app.db.database import Base, engine
+from backend.app.db.database import Base, get_engine
 from backend.app.models.models import User, Department
 from backend.app.core.security import get_password_hash
 from sqlalchemy.orm import sessionmaker
 
-# Create tables
-print("Creating database tables...")
+# Get engine and create tables
+print("Creating SQLite database tables...")
+engine = get_engine()
 Base.metadata.create_all(bind=engine)
 
 # Create session
@@ -20,6 +21,13 @@ SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 db = SessionLocal()
 
 try:
+    # Check if admin already exists
+    existing_admin = db.query(User).filter(User.email == "admin@ai-enterprise.com").first()
+    if existing_admin:
+        print("⚠️  Admin user already exists, skipping initialization.")
+        db.close()
+        sys.exit(0)
+    
     # Create default admin user
     admin = User(
         email="admin@ai-enterprise.com",
@@ -52,7 +60,8 @@ try:
         db.add(dept)
     
     db.commit()
-    print("✅ Database initialized successfully!")
+    print("✅ SQLite database initialized successfully!")
+    print(f"✅ Database location: {os.path.abspath('./data/ai_enterprise.db')}")
     print("\nDefault admin credentials:")
     print("Email: admin@ai-enterprise.com")
     print("Password: admin123")
